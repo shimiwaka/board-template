@@ -6,13 +6,15 @@ import (
 
 	"gopkg.in/yaml.v2"
 	"github.com/jinzhu/gorm"
+	"github.com/shimiwaka/board-template/schema"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 type Settings struct {
 	Username string `yaml:"db_username"`
 	Pass string `yaml:"db_pass"`
 	Host string `yaml:"db_host"`
-	Port string `yaml:"db_port"`
+	Port int `yaml:"db_port"`
 	Name string `yaml:"db_name"`
 }
 
@@ -27,9 +29,13 @@ func main() {
 	db, err := gorm.Open("mysql", connectQuery)
 
 	if err != nil {
-		fmt.Printf("error: failed to connect DB")
+		fmt.Println(connectQuery)
+		fmt.Println("error: failed to connect DB.")
+		fmt.Println(err)
 		return
 	}
-	db.Exec("DELETE FROM boards")
-	db.AutoMigrate(&Board{})
+	// db.Exec("DELETE FROM boards")
+	db.AutoMigrate(&schema.Board{})
+
+	fmt.Println("Successfully initialized.")
 }
