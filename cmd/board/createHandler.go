@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi"
+	// "github.com/go-chi/chi"
 	// "github.com/jinzhu/gorm"
 	"github.com/shimiwaka/board-template/schema"
 	"github.com/shimiwaka/board-template/connector"
@@ -12,15 +12,18 @@ import (
 )
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
+	e := r.ParseForm()
+	if e != nil {
+		panic("error: parse error")
+	}
+
 	fmt.Fprintln(w, "CREATE!")
-	fmt.Fprintln(w, chi.URLParam(r, "email"))
+	fmt.Fprintln(w, r.Form.Get("email"))
 
-	db := connector.connectDB()
+	db := connector.ConnectDB()
 
-	board := schema.Board{Owner: chi.URLParam(r, "email")}
+	board := schema.Board{Owner: r.Form.Get("email")}
 	db.Create(&board)
-
-	schema.test()
 
 	db.Close()
 }

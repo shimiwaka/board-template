@@ -18,7 +18,7 @@ type Settings struct {
 	Name string `yaml:"db_name"`
 }
 
-func connectDB() *gorm.DB {
+func ConnectDB() *gorm.DB {
 	settings := Settings{}
 	b, _ := os.ReadFile("db.yaml")
 	yaml.Unmarshal(b, &settings)
