@@ -5,8 +5,7 @@ import (
 	"os"
 
 	"gopkg.in/yaml.v2"
-	// "github.com/jinzhu/gorm"
-	// "github.com/shimiwaka/board-template/schema"
+	"github.com/jinzhu/gorm"
 )
 
 type Settings struct {
@@ -21,5 +20,16 @@ func main() {
 	settings := Settings{}
 	b, _ := os.ReadFile("../../config/db.yaml")
 	yaml.Unmarshal(b, &settings)
-	fmt.Printf("%s\n", settings.Username)
+
+	connectQuery := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		settings.Username, settings.Pass, settings.Host, settings.Port, settings.Name)
+
+	db, err := gorm.Open("mysql", connectQuery)
+
+	if err != nil {
+		fmt.Printf("error: failed to connect DB")
+		return
+	}
+	db.Exec("DELETE FROM boards")
+	db.AutoMigrate(&Board{})
 }
