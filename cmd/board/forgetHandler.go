@@ -7,6 +7,8 @@ import (
 	"net/http"
     "strings"
 
+	"github.com/shimiwaka/board-template/schema"
+	"github.com/shimiwaka/board-template/connector"
 	"gopkg.in/yaml.v2"
 )
 
@@ -17,6 +19,8 @@ type MailSettings struct {
 }
 
 func forgetHandler(w http.ResponseWriter, r *http.Request) {
+	db := connector.ConnectDB()
+
 	e := r.ParseForm()
 	if e != nil {
 		panic("error: parse error occured.")
@@ -24,14 +28,22 @@ func forgetHandler(w http.ResponseWriter, r *http.Request) {
 
 	email := r.Form.Get("email")
 
+	boards := []schema.Board{}
+
+	db.Where("owner = ?", email).Find(&boards)
+
 	mailSettings := MailSettings{}
 	b, _ := os.ReadFile("mail.yaml")
 	yaml.Unmarshal(b, &mailSettings)
 
     from := mailSettings.MailAddress
     recipients := []string{email}
-    subject := "Mail Test"
-    body := "Hello World!\nHello Gopher!"
+    subject := "board-template information"
+    body := "The board assigned to your email address is below.\n\n"
+
+	for i := 0; i < len(boards); i++ {
+		body += boards[i].Token + "\n"
+	}
 
     auth := smtp.CRAMMD5Auth(mailSettings.MailAddress, mailSettings.MailPassword)
     msg := []byte(strings.ReplaceAll(fmt.Sprintf("To: %s\nSubject: %s\n\n%s", strings.Join(recipients, ","), subject, body), "\n", "\r\n"))
@@ -41,4 +53,6 @@ func forgetHandler(w http.ResponseWriter, r *http.Request) {
         panic("error : failed to send mail.")
     }
 	fmt.Fprintln(w, "{\"success\": \"true\"}")
+
+	db.Close()
 }
