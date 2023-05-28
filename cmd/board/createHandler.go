@@ -31,5 +31,5 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 
 	db.Close()
 	
-	fmt.Fprintln(w, "{\"success\":\"true\"}")
+	fmt.Fprintf(w, "{\"success\":\"true\", \"token\",\"%s\"}", token)
 }
