@@ -20,6 +20,6 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 	if board.Owner == "" {
 		fmt.Fprintln(w, "{\"error\": \"invalid token\"}")
 	} else {
-		fmt.Fprintln(w, board.Owner)
+		fmt.Fprintf(w, "{\"owner\": \"%s\"}", board.Owner)
 	}
 }
