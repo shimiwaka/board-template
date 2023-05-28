@@ -15,6 +15,10 @@ func main() {
     r.Get(rootPath + "/", pingHandler)
 	r.Post(rootPath + "/create", createHandler)
 
+	r.Route("/board", func(r chi.Router) {
+		r.Get("/{boardToken}", boardHandler)
+	  })
+
     http.ListenAndServe(":9999", r)
 	// cgi.Serve(r)
 }
