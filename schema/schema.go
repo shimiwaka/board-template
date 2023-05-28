@@ -7,4 +7,5 @@ import (
 type Board struct {
 	gorm.Model `json:"-"`
 	Owner      string         `json:"owner"`
+	Token	   string		  `json:"token"`
 }

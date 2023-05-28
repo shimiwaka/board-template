@@ -35,6 +35,7 @@ func main() {
 		return
 	}
 	// db.Exec("DELETE FROM boards")
+	db.Exec("DROP TABLE boards")
 	db.AutoMigrate(&schema.Board{})
 
 	fmt.Println("Successfully initialized.")

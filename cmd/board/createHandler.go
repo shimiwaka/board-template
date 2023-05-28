@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"crypto/md5"
+	"time"
 
 	// "github.com/go-chi/chi"
 	// "github.com/jinzhu/gorm"
@@ -14,16 +16,20 @@ import (
 func createHandler(w http.ResponseWriter, r *http.Request) {
 	e := r.ParseForm()
 	if e != nil {
-		panic("error: parse error")
+		panic("error: parse error occured.")
 	}
 
-	fmt.Fprintln(w, "CREATE!")
-	fmt.Fprintln(w, r.Form.Get("email"))
+	email := r.Form.Get("email")
 
 	db := connector.ConnectDB()
 
-	board := schema.Board{Owner: r.Form.Get("email")}
+	seed := []byte(email + fmt.Sprint(time.Now().UnixNano()))
+	token := fmt.Sprintf("%x", md5.Sum(seed))
+
+	board := schema.Board{Owner: email, Token: token}
 	db.Create(&board)
 
 	db.Close()
+	
+	fmt.Fprintln(w, "{\"success\":\"true\"}")
 }
