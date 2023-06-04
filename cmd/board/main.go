@@ -20,7 +20,7 @@ func main() {
 	r.Post(rootPath + "/create", createHandler)
 	r.Post(rootPath + "/forget", forgetHandler)
 
-	r.Route("/board", func(r chi.Router) {
+	r.Route(rootPath + "/board", func(r chi.Router) {
 		r.Get("/{boardToken}", boardHandler)
 	  })
 
